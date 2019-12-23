@@ -6,9 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/number_trivia_model.dart';
 import 'package:meta/meta.dart';
 
+import 'data_source.dart';
+
 const CACHED_NUMBER_TRIVIA_TAG = "CACHED_NUMBER_TRIVIA";
 
-abstract class NumberTriviaLocalDataSource {
+abstract class NumberTriviaLocalDataSource extends DataSource {
   /// Gets the caches [NumberTriviaModel] which was gotten the last time
   /// the user had an internet connection.
   ///

@@ -14,12 +14,12 @@ class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   NumberTriviaLocalDataSource dataSource;
-  MockSharedPreferences mockSharedPrefrences;
+  MockSharedPreferences mock;
 
   setUp(() {
-    mockSharedPrefrences = MockSharedPreferences();
+    mock = MockSharedPreferences();
     dataSource = NumberTriviaLocalDataSourceImpl(
-      sharedPreferences: mockSharedPrefrences,
+      sharedPreferences: mock,
     );
   });
 
@@ -32,11 +32,11 @@ void main() {
       "should return NumberTrivia from SharedPreferences when there is one in the cache",
       () async {
         // arrange
-        when(mockSharedPrefrences.getString(any)).thenReturn(cachedStr);
+        when(mock.getString(any)).thenReturn(cachedStr);
         // act
         final result = await dataSource.getLastNumberTrivia();
         // assert
-        verify(mockSharedPrefrences.getString(CACHED_NUMBER_TRIVIA_TAG));
+        verify(mock.getString(CACHED_NUMBER_TRIVIA_TAG));
         expect(result, equals(tNumberTriviaModel));
       },
     );
@@ -45,7 +45,7 @@ void main() {
       "should throw a CacheException when there is not a cached value",
       () async {
         // arrange
-        when(mockSharedPrefrences.getString(any)).thenReturn(null);
+        when(mock.getString(any)).thenReturn(null);
         // act
         final call = dataSource.getLastNumberTrivia;
         // assert
@@ -67,7 +67,7 @@ void main() {
         // assert
         final expectedJsonString = json.encode(tNumberTriviaModel.toJson());
         verify(
-            mockSharedPrefrences.setString(CACHED_NUMBER_TRIVIA_TAG, expectedJsonString));
+            mock.setString(CACHED_NUMBER_TRIVIA_TAG, expectedJsonString));
       },
     );
   });
