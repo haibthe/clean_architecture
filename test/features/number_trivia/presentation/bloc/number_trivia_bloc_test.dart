@@ -1,3 +1,4 @@
+import 'package:clean_architecture_tdd_course/core/error/failures.dart';
 import 'package:clean_architecture_tdd_course/core/util/input_converter.dart';
 import 'package:clean_architecture_tdd_course/features/number_trivia/data/models/number_trivia_model.dart';
 import 'package:clean_architecture_tdd_course/features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
@@ -41,17 +42,24 @@ void main() {
     },
   );
 
-  group("GetConcreteForConcreteNumber", () {
+  group("GetTriviaForConcreteNumber", () {
     final tNumberString = "1";
     final tNumberParse = 1;
     final tNumberTrivia = NumberTriviaModel(number: 1, text: "test trivia");
+
+    void setUpMockInputConverterSuccess() =>
+        when(input.stringToUnsignedInteger(any))
+            .thenReturn(Right(tNumberParse));
+
+    void setUpMockInputConverterFailure() =>
+        when(input.stringToUnsignedInteger(any))
+            .thenReturn(Left(InvalidInputFailure()));
 
     test(
       "should call the inputConverter to vlaidate and converte the string to an unsigned integer",
       () async {
         // arrane
-        when(input.stringToUnsignedInteger(any))
-            .thenReturn(Right(tNumberParse));
+        setUpMockInputConverterSuccess();
         // act
         bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
         await untilCalled(input.stringToUnsignedInteger(any));
@@ -64,8 +72,7 @@ void main() {
       "should emit [Error] when the input is invalid",
       () async {
         // arrange
-        when(input.stringToUnsignedInteger(any))
-            .thenReturn(Left(InvalidInputFailure()));
+        setUpMockInputConverterFailure();
         // act
         bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
         // assert
@@ -74,6 +81,147 @@ void main() {
           Error(message: INVALID_INPUT_FAILURE_MESSAGE),
         ];
         expectLater(bloc.state, emitsInOrder(expected));
+      },
+    );
+
+    test(
+      "should get data from the concrete use case",
+      () async {
+        // arrange
+        setUpMockInputConverterSuccess();
+        when(mockConcrete(any)).thenAnswer((_) async => Right(tNumberTrivia));
+        // act
+        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+        await untilCalled(mockConcrete(any));
+        // assert
+        verify(mockConcrete(Params(number: tNumberParse)));
+      },
+    );
+
+    test(
+      "should emit [Loading, Loaded] when data is gotten successfully",
+      () async {
+        // arrange
+        setUpMockInputConverterSuccess();
+        when(mockConcrete(any)).thenAnswer((_) async => Right(tNumberTrivia));
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Loaded(trivia: tNumberTrivia),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+      },
+    );
+
+    test(
+      "should emit [Loading, Error] when getting data failure",
+      () async {
+        // arrange
+        setUpMockInputConverterSuccess();
+        when(mockConcrete(any)).thenAnswer((_) async => Left(ServerFailure()));
+
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Error(message: SERVER_FAILURE_MESSAGE),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+      },
+    );
+
+    test(
+      "should emit [Loading, Error] with a proper message for the error when getting data fails",
+      () async {
+        // arrange
+        setUpMockInputConverterSuccess();
+        when(mockConcrete(any)).thenAnswer((_) async => Left(CacheFailure()));
+
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Error(message: CACHE_FAILURE_MESSAGE),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForConcreteNumber(tNumberString));
+      },
+    );
+  });
+
+  group("GetTriviaForRandomNumber", () {
+    final tNumberTrivia = NumberTriviaModel(number: 1, text: "test trivia");
+
+    test(
+      "should get data from the random use case",
+      () async {
+        // arrange
+        when(mockRandom(any))
+            .thenAnswer((_) async => Right(tNumberTrivia));
+        // act
+        bloc.dispatch(GetTriviaForRandomNumber());
+        await untilCalled(mockRandom(any));
+        // assert
+        verify(mockRandom(any));
+      },
+    );
+
+    test(
+      "should emit [Loading, Loaded] when data is gotten successfully",
+      () async {
+        // arrange
+        when(mockRandom(NoParams())).thenAnswer((_) async => Right(tNumberTrivia));
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Loaded(trivia: tNumberTrivia),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForRandomNumber());
+      },
+    );
+
+    test(
+      "should emit [Loading, Error] when getting data failure",
+      () async {
+        // arrange
+        when(mockRandom(any)).thenAnswer((_) async => Left(ServerFailure()));
+
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Error(message: SERVER_FAILURE_MESSAGE),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForRandomNumber());
+      },
+    );
+
+    test(
+      "should emit [Loading, Error] with a proper message for the error when getting data fails",
+      () async {
+        // arrange
+        when(mockRandom(any)).thenAnswer((_) async => Left(CacheFailure()));
+
+        // assert later
+        final expected = [
+          Empty(),
+          Loading(),
+          Error(message: CACHE_FAILURE_MESSAGE),
+        ];
+        expectLater(bloc.state, emitsInOrder(expected));
+        // act
+        bloc.dispatch(GetTriviaForRandomNumber());
       },
     );
   });
