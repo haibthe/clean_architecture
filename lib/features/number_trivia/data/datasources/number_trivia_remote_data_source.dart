@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:clean_architecture_tdd_course/core/error/exceptions.dart';
+import 'package:clean_architecture_tdd_course/features/number_trivia/data/remote/number_trivia_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
@@ -43,3 +44,20 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
     throw ServerException();
   }
 }
+
+// class NumberTriviaRemoteDataSourceChopperImpl
+//     implements NumberTriviaRemoteDataSource {
+//   final NumberTriviaService service;
+
+//   NumberTriviaRemoteDataSourceChopperImpl({@required this.service});
+
+//   @override
+//   Future<NumberTriviaModel> getConcreteNumberTrivia(int number) {
+//     return service.getConcreteNumberTrivia(number);
+//   }
+
+//   @override
+//   Future<NumberTriviaModel> getRandomNumberTrivia() {
+//     return service.getRandomNumberTrivia();
+//   }
+// }
