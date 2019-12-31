@@ -26,7 +26,7 @@ class _$NumberTriviaService extends NumberTriviaService {
     return client.send<NumberTriviaModel, NumberTriviaModel>($request);
   }
 
-  Future<Response<dynamic>> testPost(Map<String, dynamic> body) {
+  Future<Response> testPost(Map<String, dynamic> body) {
     final $url = 'http://numbersapi.com/';
     final $body = body;
     final $request = Request('POST', $url, client.baseUrl, body: $body);

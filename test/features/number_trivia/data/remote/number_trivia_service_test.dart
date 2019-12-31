@@ -1,4 +1,3 @@
-import 'package:chopper/chopper.dart';
 import 'package:clean_architecture_tdd_course/features/number_trivia/data/models/number_trivia_model.dart';
 import 'package:clean_architecture_tdd_course/features/number_trivia/data/remote/number_trivia_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,13 +10,14 @@ void main() {
   });
 
   test(
-    "Service chopper",
+    "service chopper",
     () async {
-      NumberTriviaModel tNumber = NumberTriviaModel(number: 1, text: "Test");
-
       // act
       final result = await service.getConcreteNumberTrivia(1);
-      expect(tNumber, result.body);
+      print("result: ${result.body.toJson()}");
+
+      final random = await service.getRandomNumberTrivia();
+      print("result: ${random.body.toJson()}");
     },
   );
 }

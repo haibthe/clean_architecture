@@ -45,19 +45,21 @@ class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
   }
 }
 
-// class NumberTriviaRemoteDataSourceChopperImpl
-//     implements NumberTriviaRemoteDataSource {
-//   final NumberTriviaService service;
+class NumberTriviaRemoteDataSourceChopperImpl
+    implements NumberTriviaRemoteDataSource {
+  final NumberTriviaService service;
 
-//   NumberTriviaRemoteDataSourceChopperImpl({@required this.service});
+  NumberTriviaRemoteDataSourceChopperImpl({@required this.service});
 
-//   @override
-//   Future<NumberTriviaModel> getConcreteNumberTrivia(int number) {
-//     return service.getConcreteNumberTrivia(number);
-//   }
+  @override
+  Future<NumberTriviaModel> getConcreteNumberTrivia(int number) async {
+    var response = await service.getConcreteNumberTrivia(number);
+    return response.body;
+  }
 
-//   @override
-//   Future<NumberTriviaModel> getRandomNumberTrivia() {
-//     return service.getRandomNumberTrivia();
-//   }
-// }
+  @override
+  Future<NumberTriviaModel> getRandomNumberTrivia() async {
+    var response = await service.getRandomNumberTrivia();
+    return response.body;
+  }
+}
